@@ -28,17 +28,9 @@ interface Props {
 }
 
 export default function AdminLayout({ children }: Props) {
-  interface AuthProps extends Record<string, any> {
-    auth?: {
-        user?: {
-        id: number;
-        name: string;
-        email: string;
-        };
-    };
-  }
+  
 
-  const { url, props } = usePage<AuthProps>();
+  const { url, props } = usePage();
   const { post } = useForm({});
   const [openSidebar, setOpenSidebar] = useState(true);
   const [openUserMenu, setOpenUserMenu] = useState(true);
