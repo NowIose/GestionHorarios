@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Illuminate\Support\Facades\Hash;  //importamos la funcion HASH para proteger la contraseña
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -31,9 +32,21 @@ class CreateNewUser implements CreatesNewUsers
         ])->validate();
 
         return User::create([
+            //Generamos un registro automomatico
+            'registro'=>$this->generarRegistro(),
             'name' => $input['name'],
             'email' => $input['email'],
-            'password' => $input['password'],
+            'password' =>Hash::make( $input['password']), //protegemos la funcion la contraseña con hash 
+            'role_id' => 4,
         ]);
+        
+    }
+     /**
+     * Genera un número de registro único automáticamente.
+     */
+    public function generarRegistro() : int 
+    {
+        $ultimo=User::max('registro')??1000;
+        return $ultimo+1;
     }
 }

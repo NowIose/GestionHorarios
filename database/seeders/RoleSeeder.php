@@ -31,6 +31,12 @@ class RoleSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'nombre' => 'Usuario',
+                'descripcion'=>'Acceso básico al Sistema',
+                'created_ad'=> now(),
+                'updated_at'=> now(),
+            ],
         ]);
     }
 }
