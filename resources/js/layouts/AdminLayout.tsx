@@ -11,6 +11,7 @@ import {
   Menu,
   LogOut,
 } from 'lucide-react';
+import { Toaster } from 'react-hot-toast'; //nuevo 
 
 // ✅ Tipado para evitar errores de props
 interface AuthProps {
@@ -186,6 +187,8 @@ export default function AdminLayout({ children }: Props) {
       <main className="flex-1 bg-gray-50 p-8 overflow-y-auto transition-all">
         {children}
       </main>
+      {/* ✅ Notificaciones flotantes */}
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 }

@@ -15,8 +15,10 @@ class HorarioMateria extends Model
         'horario_id',
         'aula_id',
         'grupo_materia_id',
+        'estado', //  Nuevo campo añadido
     ];
 
+    // Relaciones
     public function horario()
     {
         return $this->belongsTo(Horario::class);

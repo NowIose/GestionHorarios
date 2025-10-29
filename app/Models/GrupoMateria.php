@@ -15,8 +15,11 @@ class GrupoMateria extends Model
         'grupo_id',
         'materia_id',
         'docente_id',
+        'gestion',
     ];
-
+     protected $casts = [
+        'gestion' => 'integer', // 👈 para mantenerlo como número
+    ];
     public function grupo()
     {
         return $this->belongsTo(Grupo::class);

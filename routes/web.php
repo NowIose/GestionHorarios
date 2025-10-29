@@ -7,9 +7,11 @@ use Laravel\Fortify\Features;
 
 //ZONA USEs PARA RUTAS DE USUARIO 
 use App\Models\User; //PARA LAS RUTAS DE USUARIO
-use App\Models\Role; //PARA USAR EL NOMBRE DEL ROL EN LUGAR DE ID EN ROUTA USARIOS
+use App\Models\Role; //PARA USAR EL NOMBRE DEL ROL EN LUGAR DE ID EN ROUTA USARIOS,DOCENTES
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+//ZONA USEs PARA RUTAS DEL DOCENTE
+use App\Models\Docente;
 
 //PAGINA PRINCIPAL NO TOCAR 
 Route::get('/', function () {
@@ -106,8 +108,37 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // hasta aqui usuarios
 
+    //GESTION DOCENTES
+    //Route::get('/docentes', fn() => inertia('Admin/GestionDocentes'))->name('admin.docentes');
+
+    Route::get('/docentes', function () {
+        $docentes = Docente::with(['user', 'grupoMaterias.materia', 'grupoMaterias.grupo'])
+            ->orderBy('id')
+            ->get();
+
+        return inertia('Admin/GestionDocentes', [
+            'docentes' => $docentes,
+        ]);
+    })->name('admin.docentes');
+
+
+    // ✅ PUT para actualizar datos del docente
+    Route::put('/docentes/{id}', function (Request $request, $id) {
+        $validated = $request->validate([
+            'especialidad' => 'nullable|string|max:255',
+            'sueldo' => 'nullable|numeric|min:0',
+            'fecha_contrato' => 'nullable|date',
+            'estado' => 'boolean',
+        ]);
+
+        $docente = Docente::findOrFail($id);
+        $docente->update($validated);
+
+        return redirect()->route('admin.docentes')
+            ->with('success', 'Datos del docente actualizados correctamente.');
+    });
+
     //otra rutas para despues
-    Route::get('/docentes', fn() => inertia('Admin/GestionDocentes'))->name('admin.docentes');
     Route::get('/bitacora', fn() => inertia('Admin/GestionBitacora'))->name('admin.bitacora');
     Route::get('/roles', fn() => inertia('Admin/GestionRoles'))->name('admin.roles');
     Route::get('/permisos', fn() => inertia('Admin/GestionPermisos'))->name('admin.permisos');

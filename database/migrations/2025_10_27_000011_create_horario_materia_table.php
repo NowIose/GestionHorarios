@@ -8,10 +8,19 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('horario_materia', function (Blueprint $table) {
             $table->id();
+
+            // 🔹 Relaciones
             $table->foreignId('horario_id')->constrained('horarios')->cascadeOnDelete();
             $table->foreignId('aula_id')->constrained('aulas')->cascadeOnDelete();
             $table->foreignId('grupo_materia_id')->constrained('grupo_materia')->cascadeOnDelete();
+
+            // 🔹 Estado activo/inactivo
+            $table->enum('estado', ['activo', 'inactivo'])->default('activo');
+
             $table->timestamps();
+
+            // 🚫 Evita duplicidad de aula y horario
+            $table->unique(['horario_id', 'aula_id'], 'horario_aula_unique');
         });
     }
 

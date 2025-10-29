@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->foreignId('grupo_id')->constrained('grupos')->cascadeOnDelete();
             $table->foreignId('materia_id')->constrained('materias')->cascadeOnDelete();
             $table->foreignId('docente_id')->nullable()->constrained('docentes')->nullOnDelete();
+            $table->year('gestion')->default(now()->year);
             $table->timestamps();
         });
     }
