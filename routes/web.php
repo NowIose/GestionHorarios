@@ -288,7 +288,58 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     //otra rutas para despues
     Route::get('/bitacora', fn() => inertia('Admin/GestionBitacora'))->name('admin.bitacora');
     
-    
+
 });
 
+
+
+/*
+    |--------------------------------------------------------------------------
+    | ZONA DOCENTE
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth'])->prefix('docente')->group(function () {
+        Route::get('/dashboard', fn() => Inertia::render('Docente/Dashboard'))->name('docente.dashboard');
+        Route::get('/materias', fn() => Inertia::render('Docente/MisMaterias'))->name('docente.materias');
+        Route::get('/horarios', fn() => Inertia::render('Docente/MisHorarios'))->name('docente.horarios');
+        Route::get('/asistencias', fn() => Inertia::render('Docente/Asistencias'))->name('docente.asistencias');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ZONA DIRECTOR DE CARRERA
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth'])->prefix('director')->group(function () {
+        Route::get('/dashboard', fn() => Inertia::render('Director/Dashboard'))->name('director.dashboard');
+        Route::get('/grupos', fn() => Inertia::render('Director/Grupos'))->name('director.grupos');
+        Route::get('/horarios', fn() => Inertia::render('Director/Horarios'))->name('director.horarios');
+        Route::get('/asignaciones', fn() => Inertia::render('Director/Asignaciones'))->name('director.asignaciones');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ZONA DECANO
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth'])->prefix('decano')->group(function () {
+        Route::get('/dashboard', fn() => Inertia::render('Decano/Dashboard'))->name('decano.dashboard');
+        Route::get('/facultades', fn() => Inertia::render('Decano/Facultades'))->name('decano.facultades');
+        Route::get('/reportes', fn() => Inertia::render('Decano/Reportes'))->name('decano.reportes');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ZONA VICEDECANO
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth'])->prefix('vicedecano')->group(function () {
+        Route::get('/dashboard', fn() => Inertia::render('Vicedecano/Dashboard'))->name('vicedecano.dashboard');
+        Route::get('/academico', fn() => Inertia::render('Vicedecano/Academico'))->name('vicedecano.academico');
+        Route::get('/docentes', fn() => Inertia::render('Vicedecano/Docentes'))->name('vicedecano.docentes');
+    });
+
+    
+
+Route::get('/test', fn() => Inertia::render('Docente/Dashboard'));
 require __DIR__.'/settings.php';

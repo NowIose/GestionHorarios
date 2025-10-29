@@ -34,7 +34,7 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-    public function share(Request $request): array
+    /*public function share(Request $request): array
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
@@ -47,5 +47,43 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }*/
+     public function share(Request $request): array
+    {
+        return array_merge(parent::share($request), [
+            // El usuario (sin exponer campos sensibles)
+            'auth' => [
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'registro' => $request->user()->registro ?? null,
+                    'role' => $request->user()->role ? [
+                        'id' => $request->user()->role->id,
+                        'nombre' => $request->user()->role->nombre,
+                    ] : null,
+                ] : null,
+            ],
+
+            // Permisos: lista simple de strings (ej: ['ver_usuarios', 'crear_usuarios', ...])
+            'permissions' => function () use ($request) {
+                if (! $request->user() || ! $request->user()->role) {
+                    return [];
+                }
+
+                // Ajusta según tu relación Role->permissions
+                return $request->user()
+                    ->role
+                    ->permissions
+                    ->pluck('nombre')
+                    ->toArray();
+            },
+
+            // Flash messages (opcional, útil para toasts)
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
+        ]);
     }
 }
