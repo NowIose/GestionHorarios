@@ -27,6 +27,8 @@ class RoleSeeder extends Seeder
             'Vicedecano' => Permission::whereIn('nombre', [
                 'ver_docentes', 'ver_horarios', 'ver_asistencias'
             ])->pluck('id'),
+            
+            'Usuario' => collect([]),
         ];
 
         foreach ($roles as $nombre => $permisos) {

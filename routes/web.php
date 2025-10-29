@@ -16,6 +16,8 @@ use App\Models\Docente;
 use App\Models\Permission;
 //ZONA USEs PARA RUTAS DE LOS ROLES
 
+//NUEVO CONTROLLER PARA REDIRECCION DE USUARIOSS
+use App\Http\Controllers\Auth\LoginRedirectController;
 
 //PAGINA PRINCIPAL NO TOCAR 
 Route::get('/', function () {
@@ -24,13 +26,25 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-//ZONA NORMAL USUARIOS AUTENTICADOS NO TOCAR
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-});
- 
+/*//ZONA NORMAL USUARIOS AUTENTICADOS (DASHBOARD ORIGINAL)
+Route::get('/dashboard', fn() => inertia('Dashboard'))
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+*/
+   //  Redirección post-login según el rol
+
+     Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('dashboard', function () {
+            return Inertia::render('dashboard');
+        })->name('dashboard');
+    });
+ /*   Route::get('/redirect', LoginRedirectController::class)
+        ->middleware(['auth', 'verified'])
+        ->name('login.redirect');
+
+    Route::get('/redirect', LoginRedirectController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('login.redirect');*/
 
 //ZONA ADMIN
 Route::middleware(['auth'])->prefix('admin')->group(function () {
@@ -57,8 +71,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             'roles' => $roles,
         ]);
     })->name('admin.usuarios');
-
-
+    //ZONA NORMAL USUARIOS AUTENTICADOS NO TOCAR
+   
 
      //  CREAR NUEVO USUARIO (POST desde el modal)
     Route::post('/usuarios', function (Request $request) {
@@ -211,7 +225,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     })->name('admin.roles');
 
 
-    // ➕ Crear rol
+    //  Crear rol
     Route::post('/roles', function (\Illuminate\Http\Request $request) {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:roles,nombre',
@@ -235,7 +249,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     });
 
 
-    // ✏️ Editar rol
+    // Editar rol
     Route::put('/roles/{id}', function (\Illuminate\Http\Request $request, $id) {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:roles,nombre,' . $id,
@@ -257,7 +271,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     });
 
 
-    // 🗑️ Eliminar rol
+    //  Eliminar rol
     Route::delete('/roles/{id}', function ($id) {
         $role = Role::findOrFail($id);
 
