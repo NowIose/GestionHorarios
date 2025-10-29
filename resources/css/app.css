@@ -179,3 +179,22 @@
     table {
     min-width: 600px; /* Evita que las columnas se colapsen demasiado 
     } */
+
+    /* 🎨 Scrollbar personalizada */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #f97316; /* naranja */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #ea580c;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 4px;
+}

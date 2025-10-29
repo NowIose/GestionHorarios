@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '@/layouts/AdminLayout';
-import { Shield, Plus, Edit3, Trash2, CheckSquare, X } from 'lucide-react';
+import { Shield, Plus, Edit3, Trash2, CheckSquare, X ,ChevronRight,ChevronDown } from 'lucide-react';
 
 interface Permission {
   id: number;
   nombre: string;
   descripcion: string;
+  modulo?: string; // ✅ nuevo campo
 }
 
 interface Role {
@@ -15,6 +16,81 @@ interface Role {
   descripcion: string;
   permissions: Permission[];
 }
+
+// 🧩 Subcomponente para manejar cada grupo de permisos plegable
+const PermissionGroup = ({
+  modulo,
+  perms,
+  data,
+  setData,
+  togglePermission,
+}: {
+  modulo: string;
+  perms: Permission[];
+  data: { permissions: number[] };
+  setData: (field: string, value: any) => void;
+  togglePermission: (id: number) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const allSelected = perms.every((p) => data.permissions.includes(p.id));
+  const partiallySelected =
+    perms.some((p) => data.permissions.includes(p.id)) && !allSelected;
+
+  return (
+    <div className="border rounded-lg p-3 mb-3 shadow-sm bg-gray-50">
+      {/* Encabezado del módulo */}
+      <div
+        className="flex items-center justify-between cursor-pointer select-none"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <label className="flex items-center gap-2 font-semibold text-orange-600">
+          <input
+            type="checkbox"
+            checked={allSelected}
+            ref={(input) => {
+              if (input) input.indeterminate = partiallySelected;
+            }}
+            onChange={(e) => {
+              const newPermissions = e.target.checked
+                ? [...new Set([...data.permissions, ...perms.map((p) => p.id)])]
+                : data.permissions.filter((id) => !perms.some((p) => p.id === id));
+              setData('permissions', newPermissions);
+            }}
+          />
+          {modulo}
+        </label>
+        {isOpen ? (
+  <ChevronDown size={18} className="text-gray-500 transition-transform" />
+) : (
+  <ChevronRight size={18} className="text-gray-500 transition-transform" />
+)}
+
+      </div>
+
+      {/* Permisos hijos colapsables */}
+      {isOpen && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 mt-3 ml-5">
+          {perms.map((perm) => (
+            <label
+              key={perm.id}
+              className={`flex items-center gap-2 text-sm text-gray-700 cursor-pointer ${
+                allSelected ? 'opacity-60 pointer-events-none' : ''
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={data.permissions.includes(perm.id)}
+                onChange={() => togglePermission(perm.id)}
+                disabled={allSelected}
+              />
+              {perm.descripcion || perm.nombre}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function GestionRoles() {
   const { props } = usePage<{ roles: Role[]; permissions: Permission[] }>();
@@ -31,6 +107,7 @@ export default function GestionRoles() {
     permissions: [] as number[],
   });
 
+  // Abrir modal en modo creación
   const openCreateModal = () => {
     reset();
     setEditMode(false);
@@ -38,6 +115,7 @@ export default function GestionRoles() {
     setShowModal(true);
   };
 
+  // Abrir modal en modo edición
   const openEditModal = (role: Role) => {
     setEditMode(true);
     setEditingRole(role);
@@ -49,6 +127,7 @@ export default function GestionRoles() {
     setShowModal(true);
   };
 
+  // Guardar cambios (crear o editar)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -69,12 +148,14 @@ export default function GestionRoles() {
     }
   };
 
+  // Eliminar rol
   const handleDelete = (role: Role) => {
     if (confirm(`¿Seguro que deseas eliminar el rol "${role.nombre}"?`)) {
       destroy(`/admin/roles/${role.id}`);
     }
   };
 
+  // Alternar permiso individual
   const togglePermission = (id: number) => {
     setData(
       'permissions',
@@ -88,6 +169,7 @@ export default function GestionRoles() {
     <AdminLayout>
       <Head title="Gestión de Roles" />
 
+      {/* Encabezado */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Gestión de Roles</h1>
@@ -172,6 +254,7 @@ export default function GestionRoles() {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Nombre */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                 <input
@@ -184,6 +267,7 @@ export default function GestionRoles() {
                 {errors.nombre && <p className="text-sm text-red-500 mt-1">{errors.nombre}</p>}
               </div>
 
+              {/* Descripción */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                 <input
@@ -195,25 +279,36 @@ export default function GestionRoles() {
                 />
               </div>
 
-              {/* Permisos */}
+              {/* Permisos agrupados */}
               <div>
                 <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                   <CheckSquare size={16} /> Permisos disponibles
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg">
-                  {permissions.map((permiso) => (
-                    <label key={permiso.id} className="flex items-center gap-2 text-sm text-gray-700">
-                      <input
-                        type="checkbox"
-                        checked={data.permissions.includes(permiso.id)}
-                        onChange={() => togglePermission(permiso.id)}
-                      />
-                      {permiso.descripcion || permiso.nombre}
-                    </label>
+
+                {/* 🧱 Contenedor con scroll si hay muchos módulos */}
+                <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  {Object.entries(
+                    permissions.reduce((acc, permiso) => {
+                      const grupo = permiso.modulo || 'General';
+                      if (!acc[grupo]) acc[grupo] = [];
+                      acc[grupo].push(permiso);
+                      return acc;
+                    }, {} as Record<string, Permission[]>)
+                  ).map(([modulo, perms]) => (
+                    <PermissionGroup
+                      key={modulo}
+                      modulo={modulo}
+                      perms={perms}
+                      data={data}
+                      setData={setData}
+                      togglePermission={togglePermission}
+                    />
                   ))}
                 </div>
               </div>
 
+
+              {/* Botones */}
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"

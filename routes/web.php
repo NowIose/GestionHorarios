@@ -195,14 +195,21 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     //  Mostrar roles con sus permisos
     Route::get('/roles', function () {
-        $roles = Role::with('permissions:id,nombre,descripcion')->get();
-        $permissions = Permission::select('id', 'nombre', 'descripcion')->get();
+        // Traemos los roles con todos sus permisos (incluyendo módulo)
+        $roles = Role::with('permissions:id,nombre,descripcion,modulo')->get();
+
+        // Traemos todos los permisos, incluyendo el campo 'modulo'
+        $permissions = Permission::select('id', 'nombre', 'descripcion', 'modulo')
+            ->orderBy('modulo')
+            ->orderBy('id')
+            ->get();
 
         return inertia('Admin/GestionRoles', [
             'roles' => $roles,
             'permissions' => $permissions,
         ]);
     })->name('admin.roles');
+
 
     // ➕ Crear rol
     Route::post('/roles', function (\Illuminate\Http\Request $request) {
@@ -212,17 +219,21 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             'permissions' => 'array',
         ]);
 
+        // Crear el rol
         $role = Role::create([
             'nombre' => $validated['nombre'],
             'descripcion' => $validated['descripcion'] ?? null,
         ]);
 
+        // Asignar permisos (si los hay)
         if (!empty($validated['permissions'])) {
             $role->permissions()->sync($validated['permissions']);
         }
 
-        return redirect()->route('admin.roles')->with('success', 'Rol creado correctamente.');
+        return redirect()->route('admin.roles')
+            ->with('success', 'Rol creado correctamente.');
     });
+
 
     // ✏️ Editar rol
     Route::put('/roles/{id}', function (\Illuminate\Http\Request $request, $id) {
@@ -238,17 +249,25 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             'descripcion' => $validated['descripcion'] ?? null,
         ]);
 
+        // Actualizamos los permisos del rol
         $role->permissions()->sync($validated['permissions'] ?? []);
 
-        return redirect()->route('admin.roles')->with('success', 'Rol actualizado correctamente.');
+        return redirect()->route('admin.roles')
+            ->with('success', 'Rol actualizado correctamente.');
     });
+
 
     // 🗑️ Eliminar rol
     Route::delete('/roles/{id}', function ($id) {
-        Role::findOrFail($id)->delete();
-        return redirect()->route('admin.roles')->with('success', 'Rol eliminado correctamente.');
-    });
+        $role = Role::findOrFail($id);
 
+        // Eliminamos también las relaciones de permisos
+        $role->permissions()->detach();
+        $role->delete();
+
+        return redirect()->route('admin.roles')
+            ->with('success', 'Rol eliminado correctamente.');
+    });
 
 
 
