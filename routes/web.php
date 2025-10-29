@@ -16,6 +16,9 @@ use App\Models\Docente;
 use App\Models\Permission;
 //ZONA USEs PARA RUTAS DE LOS ROLES
 
+//ZONA USEs PARA RUTAS DE LA ASISTENCIA DE DOCENTES
+use App\Http\Controllers\Docente\AsistenciaController;
+
 //NUEVO CONTROLLER PARA REDIRECCION DE USUARIOSS
 use App\Http\Controllers\Auth\LoginRedirectController;
 
@@ -303,6 +306,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::get('/materias', fn() => Inertia::render('Docente/MisMaterias'))->name('docente.materias');
         Route::get('/horarios', fn() => Inertia::render('Docente/MisHorarios'))->name('docente.horarios');
         Route::get('/asistencias', fn() => Inertia::render('Docente/Asistencias'))->name('docente.asistencias');
+        
+    });
+
+    Route::middleware(['auth'])->prefix('docente')->group(function () {
+        Route::get('/asistencias', [AsistenciaController::class, 'index'])->name('docente.asistencias');
+        Route::post('/asistencias', [AsistenciaController::class, 'store'])->name('docente.asistencias.store');
     });
 
     /*
