@@ -21,6 +21,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       
+         Inertia::share([
+            'auth' => function () {
+                $user = Auth::user();
+                if (! $user) return null;
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role?->nombre ?? null, // nombre del rol como string
+                    'role_id' => $user->role_id ?? null,
+                ];
+            },
+            'flash' => [
+                'success' => fn () => session('success'),
+                'error' => fn () => session('error'),
+            ],
+        ]);
+    
     }
 }
