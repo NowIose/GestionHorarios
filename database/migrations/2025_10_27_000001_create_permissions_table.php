@@ -8,8 +8,8 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre')->unique(); 
             $table->string('descripcion');
-            $table->string('modulo')->nullable();
             $table->timestamps();
         });
     }

@@ -7,11 +7,15 @@ use Laravel\Fortify\Features;
 
 //ZONA USEs PARA RUTAS DE USUARIO 
 use App\Models\User; //PARA LAS RUTAS DE USUARIO
-use App\Models\Role; //PARA USAR EL NOMBRE DEL ROL EN LUGAR DE ID EN ROUTA USARIOS,DOCENTES
+use App\Models\Role; //PARA USAR EL NOMBRE DEL ROL EN LUGAR DE ID EN ROUTA USARIOS,DOCENTES,PARA LAS USES DE ROLES,
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 //ZONA USEs PARA RUTAS DEL DOCENTE
 use App\Models\Docente;
+//ZONA USEs PARA RUTAS DE LOS PERMISOS
+use App\Models\Permission;
+//ZONA USEs PARA RUTAS DE LOS ROLES
+
 
 //PAGINA PRINCIPAL NO TOCAR 
 Route::get('/', function () {
@@ -122,7 +126,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     })->name('admin.docentes');
 
 
-    // ✅ PUT para actualizar datos del docente
+    //  PUT para actualizar datos del docente
     Route::put('/docentes/{id}', function (Request $request, $id) {
         $validated = $request->validate([
             'especialidad' => 'nullable|string|max:255',
@@ -138,10 +142,120 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             ->with('success', 'Datos del docente actualizados correctamente.');
     });
 
+    
+    
+    //GESTION PERMISOS 
+    //Route::get('/permisos', fn() => inertia('Admin/GestionPermisos'))->name('admin.permisos');
+
+    Route::get('/permisos', function () {
+        $permisos = Permission::select('id', 'nombre', 'descripcion')->orderBy('id')->get();
+
+        return inertia('Admin/GestionPermisos', [
+            'permisos' => $permisos,
+        ]);
+    })->name('admin.permisos');
+
+    // Crear permiso
+    Route::post('/permisos', function (\Illuminate\Http\Request $request) {
+        $validated = $request->validate([
+            'nombre' => 'required|string|unique:permissions,nombre|max:255',
+            'descripcion' => 'nullable|string|max:255',
+        ]);
+
+        Permission::create($validated);
+
+        return redirect()->route('admin.permisos')->with('success', 'Permiso creado correctamente.');
+    });
+
+    // Actualizar permiso
+    Route::put('/permisos/{id}', function (\Illuminate\Http\Request $request, $id) {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255|unique:permissions,nombre,' . $id,
+            'descripcion' => 'nullable|string|max:255',
+        ]);
+
+        $permiso = Permission::findOrFail($id);
+        $permiso->update($validated);
+
+        return redirect()->route('admin.permisos')->with('success', 'Permiso actualizado correctamente.');
+    });
+
+    // Eliminar permiso
+    Route::delete('/permisos/{id}', function ($id) {
+        Permission::findOrFail($id)->delete();
+
+        return redirect()->route('admin.permisos')->with('success', 'Permiso eliminado correctamente.');
+    });
+
+
+
+    //GESTION ROLES
+    //Route::get('/roles', fn() => inertia('Admin/GestionRoles'))->name('admin.roles');
+    
+
+    //  Mostrar roles con sus permisos
+    Route::get('/roles', function () {
+        $roles = Role::with('permissions:id,nombre,descripcion')->get();
+        $permissions = Permission::select('id', 'nombre', 'descripcion')->get();
+
+        return inertia('Admin/GestionRoles', [
+            'roles' => $roles,
+            'permissions' => $permissions,
+        ]);
+    })->name('admin.roles');
+
+    // ➕ Crear rol
+    Route::post('/roles', function (\Illuminate\Http\Request $request) {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255|unique:roles,nombre',
+            'descripcion' => 'nullable|string|max:255',
+            'permissions' => 'array',
+        ]);
+
+        $role = Role::create([
+            'nombre' => $validated['nombre'],
+            'descripcion' => $validated['descripcion'] ?? null,
+        ]);
+
+        if (!empty($validated['permissions'])) {
+            $role->permissions()->sync($validated['permissions']);
+        }
+
+        return redirect()->route('admin.roles')->with('success', 'Rol creado correctamente.');
+    });
+
+    // ✏️ Editar rol
+    Route::put('/roles/{id}', function (\Illuminate\Http\Request $request, $id) {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255|unique:roles,nombre,' . $id,
+            'descripcion' => 'nullable|string|max:255',
+            'permissions' => 'array',
+        ]);
+
+        $role = Role::findOrFail($id);
+        $role->update([
+            'nombre' => $validated['nombre'],
+            'descripcion' => $validated['descripcion'] ?? null,
+        ]);
+
+        $role->permissions()->sync($validated['permissions'] ?? []);
+
+        return redirect()->route('admin.roles')->with('success', 'Rol actualizado correctamente.');
+    });
+
+    // 🗑️ Eliminar rol
+    Route::delete('/roles/{id}', function ($id) {
+        Role::findOrFail($id)->delete();
+        return redirect()->route('admin.roles')->with('success', 'Rol eliminado correctamente.');
+    });
+
+
+
+
     //otra rutas para despues
     Route::get('/bitacora', fn() => inertia('Admin/GestionBitacora'))->name('admin.bitacora');
-    Route::get('/roles', fn() => inertia('Admin/GestionRoles'))->name('admin.roles');
-    Route::get('/permisos', fn() => inertia('Admin/GestionPermisos'))->name('admin.permisos');
+    
+    
 });
 
 require __DIR__.'/settings.php';

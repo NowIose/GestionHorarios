@@ -10,8 +10,9 @@ class Permission extends Model
     use HasFactory;
 
     protected $fillable = [
+        'nombre',
         'descripcion',
-        'modulo',
+        
     ];
 
     // Un permiso puede pertenecer a varios roles
