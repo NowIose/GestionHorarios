@@ -21,6 +21,9 @@ use App\Http\Controllers\Docente\AsistenciaController;
 
 //NUEVO CONTROLLER PARA REDIRECCION DE USUARIOSS
 use App\Http\Controllers\Auth\LoginRedirectController;
+//ZONA USEs PARA RUTAS DE LA BITACORA
+use App\Http\Controllers\Admin\BitacoraController;
+
 
 //PAGINA PRINCIPAL NO TOCAR 
 Route::get('/', function () {
@@ -289,7 +292,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
 
     //otra rutas para despues
-    Route::get('/bitacora', fn() => inertia('Admin/GestionBitacora'))->name('admin.bitacora');
+   // Route::get('/bitacora', fn() => inertia('Admin/GestionBitacora'))->name('admin.bitacora');
+    Route::get('/bitacora', [BitacoraController::class, 'index'])->name('admin.bitacora');
     
 
 });
