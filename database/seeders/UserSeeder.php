@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         // encontrar los id de los roles por nombres 
         $adminRole = Role::where('nombre','Administrador')->value('id');
         $docenteRole =Role::where('nombre','Docente')->value('id');
-        $secretariaRole =Role::where('nombre','Secretaria')->value('id');
+       
         // ==========================================================
         // 👑 Usuario Administrador principal
         // ==========================================================
@@ -68,8 +68,8 @@ class UserSeeder extends Seeder
             'registro' => 3001,
             'name' => 'Laura Mendoza',
             'email' => 'lmendoza@local.test',
-            'password' => Hash::make('secretaria123'),
-            'role_id' => $secretariaRole, // Rol Secretaría
+            'password' => Hash::make('docente123'),
+            'role_id' => $docenteRole, // Rol Secretaría
         ]);
     }
 }
