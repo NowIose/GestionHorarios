@@ -13,6 +13,11 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
+        // encontrar los id de los roles por nombres 
+        $adminRole = Role::where('nombre','Administrador')->value('id');
+        $docenteRole =Role::where('nombre','Docente')->value('id');
+        $secretariaRole =Role::where('nombre','Secretaria')->value('id');
         // ==========================================================
         // 👑 Usuario Administrador principal
         // ==========================================================
@@ -21,7 +26,7 @@ class UserSeeder extends Seeder
             'name' => 'Administrador General',    // nombre visible
             'email' => 'admin@local.test',        // correo para login
             'password' => Hash::make('admin1234'),// contraseña
-            'role_id' => 1,                       // rol "Administrador"
+            'role_id' => $adminRole,                      // rol "Administrador"
         ]);
 
         // ==========================================================
@@ -33,21 +38,21 @@ class UserSeeder extends Seeder
                 'name' => 'Juan Pérez',
                 'email' => 'jperez@local.test',
                 'password' => Hash::make('docente123'),
-                'role_id' => 2, // Rol Docente
+                'role_id' => $docenteRole, // Rol Docente
             ],
             [
                 'registro' => 2002,
                 'name' => 'María Gómez',
                 'email' => 'mgomez@local.test',
                 'password' => Hash::make('docente123'),
-                'role_id' => 2, // Rol Docente
+                'role_id' => $docenteRole, // Rol Docente
             ],
             [
                 'registro' => 2003,
                 'name' => 'Carlos Rojas',
                 'email' => 'crojas@local.test',
                 'password' => Hash::make('docente123'),
-                'role_id' => 2, // Rol Docente
+                'role_id' => $docenteRole, // Rol Docente
             ],
         ];
 
@@ -63,7 +68,7 @@ class UserSeeder extends Seeder
             'name' => 'Laura Mendoza',
             'email' => 'lmendoza@local.test',
             'password' => Hash::make('secretaria123'),
-            'role_id' => 3, // Rol Secretaría
+            'role_id' => $secretariaRole, // Rol Secretaría
         ]);
     }
 }
