@@ -10,11 +10,13 @@ class DocenteSeeder extends Seeder
 {
     public function run(): void
     {
+        // Verificar que la tabla 'docentes' existe
         if (!DB::getSchemaBuilder()->hasTable('docentes')) {
             $this->command->warn('⚠️ La tabla "docentes" no existe. Se omite DocenteSeeder.');
             return;
         }
 
+        // Obtener el ID del rol "Docente" de forma dinámica
         $docenteRoleId = DB::table('roles')->where('nombre', 'Docente')->value('id');
 
         if (!$docenteRoleId) {
@@ -22,6 +24,7 @@ class DocenteSeeder extends Seeder
             return;
         }
 
+        // Obtener usuarios con rol Docente
         $docentes = DB::table('users')
             ->where('role_id', $docenteRoleId)
             ->get();
@@ -31,21 +34,18 @@ class DocenteSeeder extends Seeder
             return;
         }
 
-        $faker = fake(); // ✅ funciona en cualquier entorno
+        // Posibles especialidades fijas
+        $especialidades = ['Matemáticas', 'Física', 'Informática', 'Estadística', 'Electrónica'];
 
         foreach ($docentes as $u) {
-            if (!DB::table('docentes')->where('user_id', $u->id)->exists()) {
+            $yaExiste = DB::table('docentes')->where('user_id', $u->id)->exists();
+
+            if (!$yaExiste) {
                 DB::table('docentes')->insert([
                     'user_id' => $u->id,
-                    'fecha_contrato' => Carbon::now()->subDays(rand(10, 300)),
-                    'especialidad' => $faker->randomElement([
-                        'Matemáticas',
-                        'Física',
-                        'Informática',
-                        'Estadística',
-                        'Electrónica',
-                    ]),
-                    'sueldo' => $faker->randomFloat(2, 3500, 6000),
+                    'fecha_contrato' => Carbon::now()->subDays(rand(30, 365)),
+                    'especialidad' => $especialidades[array_rand($especialidades)],
+                    'sueldo' => rand(4000, 7000) + rand(0, 99) / 100, // número decimal simple
                     'estado' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
