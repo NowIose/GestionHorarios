@@ -15,10 +15,10 @@ class DocenteSeeder extends Seeder
             $this->command->warn('⚠️ La tabla "docentes" no existe. Se omite DocenteSeeder.');
             return;
         }
-
+        $docenteRoleId = DB::table('roles')->where('nombre', 'Docente')->value('id');
         // Obtener usuarios con rol Docente (role_id = 2)
         $docentes = DB::table('users')
-            ->where('role_id', 2)
+            ->where('role_id', $docenteRoleId)
             ->get();
 
         if ($docentes->isEmpty()) {
