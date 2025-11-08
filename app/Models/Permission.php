@@ -13,7 +13,7 @@ class Permission extends Model
         'nombre',
         'descripcion',
         'modulo',
-        
+        'otorgable',
     ];
 
     // Un permiso puede pertenecer a varios roles
