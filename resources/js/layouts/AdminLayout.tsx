@@ -34,8 +34,20 @@ export default function AdminLayout({ children }: Props) {
   const { url, props } = usePage();
   const { post } = useForm({});
   const [openSidebar, setOpenSidebar] = useState(true);
-  const [openUserMenu, setOpenUserMenu] = useState(true);
-
+  //const [openUserMenu, setOpenUserMenu] = useState(true);
+  const [openUserMenu, setOpenUserMenu] = useState(() =>
+  url.startsWith('/admin/usuarios') ||
+  url.startsWith('/admin/docentes') ||
+  url.startsWith('/admin/roles') ||
+  url.startsWith('/admin/permisos') ||
+  url.startsWith('/admin/bitacora')
+);
+  //const [openAcademicMenu, setOpenAcademicMenu] = useState(true);    //PARA MODULO ACADEMICO
+  const [openAcademicMenu, setOpenAcademicMenu] = useState(() =>
+  url.startsWith('/admin/materias') ||
+  url.startsWith('/admin/grupos') ||
+  url.startsWith('/admin/grupo-materia')
+);
   // ✅ sin Ziggy: usamos ruta directa
   const handleLogout = (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,6 +173,73 @@ export default function AdminLayout({ children }: Props) {
               </Link>
             </div>
           )}
+          {/* === GESTIÓN ACADÉMICA === */}
+<button
+  onClick={() => setOpenAcademicMenu(!openAcademicMenu)}
+  className={`w-full flex items-center justify-between px-4 py-3 rounded-r-full transition-all ${
+    openAcademicMenu
+      ? 'bg-blue-700 text-white shadow-inner'
+      : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+  }`}
+>
+  <div className="flex items-center gap-3">
+    <BookOpen size={18} />
+    {openSidebar && <span>Gestión Académica</span>}
+  </div>
+  {openSidebar && (
+    <ChevronRight
+      size={16}
+      className={`transform transition-transform ${
+        openAcademicMenu ? 'rotate-90' : ''
+      }`}
+    />
+  )}
+</button>
+
+{openAcademicMenu && (
+  <div
+    className={`${
+      openSidebar ? 'ml-6 pl-3' : 'ml-3'
+    } mt-1 border-l border-blue-700 space-y-1`}
+  >
+    <Link
+      href="/admin/materias"
+      className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+        url.startsWith('/admin/materias')
+          ? 'bg-blue-800 text-white'
+          : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+      }`}
+    >
+      <BookOpen size={16} />
+      {openSidebar && <span>Materias</span>}
+    </Link>
+
+    <Link
+      href="/admin/grupos"
+      className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+        url.startsWith('/admin/grupos')
+          ? 'bg-blue-800 text-white'
+          : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+      }`}
+    >
+      <Users size={16} />
+      {openSidebar && <span>Grupos</span>}
+    </Link>
+
+    <Link
+      href="/admin/grupo-materia"
+      className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+        url.startsWith('/admin/grupo-materia')
+          ? 'bg-blue-800 text-white'
+          : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+      }`}
+    >
+      <UserCog size={16} />
+      {openSidebar && <span>Asignar Grupo-Materia</span>}
+    </Link>
+  </div>
+)}
+
         </nav>
 
         <div className="border-t border-blue-700 p-4 flex items-center justify-between">
@@ -172,6 +251,8 @@ export default function AdminLayout({ children }: Props) {
               <span className="text-xs text-blue-300">{user.email}</span>
             </div>
           )}
+
+
           <form onSubmit={handleLogout}>
             <button
               type="submit"

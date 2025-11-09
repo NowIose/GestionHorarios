@@ -23,7 +23,14 @@ use App\Http\Controllers\Docente\AsistenciaController;
 use App\Http\Controllers\Auth\LoginRedirectController;
 //ZONA USEs PARA RUTAS DE LA BITACORA
 use App\Http\Controllers\Admin\BitacoraController;
-
+//ZONA USES PARA EL MODULO 2 DE DOCENTES
+   use App\Models\Materia;
+    use App\Models\Grupo;
+    use App\Models\Prerequisito;
+    use App\Models\GrupoMateria;
+use App\Http\Controllers\Admin\Academico\MateriaController;
+use App\Http\Controllers\Admin\Academico\GrupoController;
+use App\Http\Controllers\Admin\Academico\GrupoMateriaController;
 
 //PAGINA PRINCIPAL NO TOCAR 
 Route::get('/', function () {
@@ -294,7 +301,41 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     //otra rutas para despues
    // Route::get('/bitacora', fn() => inertia('Admin/GestionBitacora'))->name('admin.bitacora');
     Route::get('/bitacora', [BitacoraController::class, 'index'])->name('admin.bitacora');
-    
+
+     /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN ACADÉMICA (Materias, Grupos, Prerequisitos, GrupoMateria)
+    |--------------------------------------------------------------------------
+    */
+
+    // 🔹 Materias (con prerequisitos)
+    Route::get('/materias', function () {
+        $materias = \App\Models\Materia::with([
+            'prerequisitos.materiaRequisito:id,sigla,nombre,semestre,creditos',
+        ])
+            ->orderBy('semestre')
+            ->get();
+             // 👇 Esto es temporal solo para verificar qué devuelve
+    //dd($materias->toArray());
+        return inertia('Admin/Academico/Materias', [
+            'materias' => $materias,
+        ]);
+    })->name('admin.materias');
+
+    Route::post('/materias', [MateriaController::class, 'store']);
+    Route::put('/materias/{materia}', [MateriaController::class, 'update']);
+    Route::delete('/materias/{materia}', [MateriaController::class, 'destroy']);
+
+    // 🔹 Grupos
+    Route::get('/grupos', [GrupoController::class, 'index'])->name('admin.grupos');
+    Route::post('/grupos', [GrupoController::class, 'store']);
+    Route::put('/grupos/{grupo}', [GrupoController::class, 'update']);
+    Route::delete('/grupos/{grupo}', [GrupoController::class, 'destroy']);
+
+    // 🔹 Grupo-Materia (asignar docentes y materias a grupos)
+    Route::get('/grupo-materia', [GrupoMateriaController::class, 'index'])->name('admin.grupoMateria');
+    Route::post('/grupo-materia', [GrupoMateriaController::class, 'store']);
+    Route::delete('/grupo-materia/{grupoMateria}', [GrupoMateriaController::class, 'destroy']);
 
 });
 
