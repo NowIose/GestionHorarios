@@ -8,7 +8,15 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('horarios', function (Blueprint $table) {
             $table->id();
-            $table->string('dia');
+             $table->enum('dia', [
+                'Lunes',
+                'Martes',
+                'Miércoles',
+                'Jueves',
+                'Viernes',
+                'Sábado',
+                'Domingo'
+            ]);
             $table->time('hora_inicio');
             $table->time('hora_fin');
             $table->timestamps();

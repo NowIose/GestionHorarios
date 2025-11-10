@@ -10,6 +10,9 @@ import {
   ChevronRight,
   Menu,
   LogOut,
+  Layers,
+  Clock,
+  Building2,
 } from 'lucide-react';
 import { Toaster } from 'react-hot-toast'; //nuevo 
 
@@ -53,7 +56,9 @@ export default function AdminLayout({ children }: Props) {
     e.preventDefault();
     post('/logout');
   };
- 
+  const [openScheduleMenu, setOpenScheduleMenu] = useState(() =>
+  url.startsWith('/admin/horarios')
+  );
   const user = props.auth?.user;
 
   return (
@@ -174,71 +179,149 @@ export default function AdminLayout({ children }: Props) {
             </div>
           )}
           {/* === GESTIÓN ACADÉMICA === */}
-<button
-  onClick={() => setOpenAcademicMenu(!openAcademicMenu)}
-  className={`w-full flex items-center justify-between px-4 py-3 rounded-r-full transition-all ${
-    openAcademicMenu
-      ? 'bg-blue-700 text-white shadow-inner'
-      : 'text-blue-100 hover:bg-blue-800 hover:text-white'
-  }`}
->
-  <div className="flex items-center gap-3">
-    <BookOpen size={18} />
-    {openSidebar && <span>Gestión Académica</span>}
-  </div>
-  {openSidebar && (
-    <ChevronRight
-      size={16}
-      className={`transform transition-transform ${
-        openAcademicMenu ? 'rotate-90' : ''
-      }`}
-    />
-  )}
-</button>
+            <button
+              onClick={() => setOpenAcademicMenu(!openAcademicMenu)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-r-full transition-all ${
+                openAcademicMenu
+                  ? 'bg-blue-700 text-white shadow-inner'
+                  : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <BookOpen size={18} />
+                {openSidebar && <span>Gestión Académica</span>}
+              </div>
+              {openSidebar && (
+                <ChevronRight
+                  size={16}
+                  className={`transform transition-transform ${
+                    openAcademicMenu ? 'rotate-90' : ''
+                  }`}
+                />
+              )}
+            </button>
 
-{openAcademicMenu && (
-  <div
-    className={`${
-      openSidebar ? 'ml-6 pl-3' : 'ml-3'
-    } mt-1 border-l border-blue-700 space-y-1`}
-  >
-    <Link
-      href="/admin/materias"
-      className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
-        url.startsWith('/admin/materias')
-          ? 'bg-blue-800 text-white'
-          : 'text-blue-100 hover:bg-blue-800 hover:text-white'
-      }`}
-    >
-      <BookOpen size={16} />
-      {openSidebar && <span>Materias</span>}
-    </Link>
+            {openAcademicMenu && (
+              <div
+                className={`${
+                  openSidebar ? 'ml-6 pl-3' : 'ml-3'
+                } mt-1 border-l border-blue-700 space-y-1`}
+              >
+                <Link
+                  href="/admin/materias"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                    url.startsWith('/admin/materias')
+                      ? 'bg-blue-800 text-white'
+                      : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+                  }`}
+                >
+                  <BookOpen size={16} />
+                  {openSidebar && <span>Materias</span>}
+                </Link>
 
-    <Link
-      href="/admin/grupos"
-      className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
-        url.startsWith('/admin/grupos')
-          ? 'bg-blue-800 text-white'
-          : 'text-blue-100 hover:bg-blue-800 hover:text-white'
-      }`}
-    >
-      <Users size={16} />
-      {openSidebar && <span>Grupos</span>}
-    </Link>
+                <Link
+                  href="/admin/grupos"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                    url.startsWith('/admin/grupos')
+                      ? 'bg-blue-800 text-white'
+                      : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+                  }`}
+                >
+                  <Users size={16} />
+                  {openSidebar && <span>Grupos</span>}
+                </Link>
 
-    <Link
-      href="/admin/grupo-materia"
-      className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
-        url.startsWith('/admin/grupo-materia')
-          ? 'bg-blue-800 text-white'
-          : 'text-blue-100 hover:bg-blue-800 hover:text-white'
-      }`}
-    >
-      <UserCog size={16} />
-      {openSidebar && <span>Asignar Grupo-Materia</span>}
-    </Link>
-  </div>
-)}
+                <Link
+                  href="/admin/grupo-materia"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                    url.startsWith('/admin/grupo-materia')
+                      ? 'bg-blue-800 text-white'
+                      : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+                  }`}
+                >
+                  <UserCog size={16} />
+                  {openSidebar && <span>Asignar Grupo-Materia</span>}
+                </Link>
+              </div>
+            )}
+          {/* === GESTIÓN DE HORARIOS === */}
+          <button
+            onClick={() => setOpenScheduleMenu(!openScheduleMenu)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-r-full transition-all ${
+              openScheduleMenu
+                ? 'bg-emerald-700 text-white shadow-inner'
+                : 'text-emerald-100 hover:bg-emerald-800 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <BookOpen size={18} />
+              {openSidebar && <span>Gestión de Horarios</span>}
+            </div>
+            {openSidebar && (
+              <ChevronRight
+                size={16}
+                className={`transform transition-transform ${
+                  openScheduleMenu ? 'rotate-90' : ''
+                }`}
+              />
+            )}
+          </button>
+
+          {openScheduleMenu && (
+            <div
+              className={`${
+                openSidebar ? 'ml-6 pl-3' : 'ml-3'
+              } mt-1 border-l border-emerald-700 space-y-1`}
+            >
+              <Link
+                href="/admin/horarios/aulas"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                  url.startsWith('/admin/horarios/aulas')
+                    ? 'bg-emerald-800 text-white'
+                    : 'text-emerald-100 hover:bg-emerald-800 hover:text-white'
+                }`}
+              >
+                <Building2 size={16} />
+                {openSidebar && <span>Aulas</span>}
+              </Link>
+
+              <Link
+                href="/admin/horarios"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                  url === '/admin/horarios'
+                    ? 'bg-emerald-800 text-white'
+                    : 'text-emerald-100 hover:bg-emerald-800 hover:text-white'
+                }`}
+              >
+                <Clock size={16} />
+                {openSidebar && <span>Horarios</span>}
+              </Link>
+
+              <Link
+                href="/admin/horarios/asignaciones"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                  url.startsWith('/admin/horarios/asignaciones')
+                    ? 'bg-emerald-800 text-white'
+                    : 'text-emerald-100 hover:bg-emerald-800 hover:text-white'
+                }`}
+              >
+                <Layers size={16} />
+                {openSidebar && <span>Asignaciones</span>}
+              </Link>
+
+              <Link
+                href="/admin/horarios/asistencias"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                  url.startsWith('/admin/horarios/asistencias')
+                    ? 'bg-emerald-800 text-white'
+                    : 'text-emerald-100 hover:bg-emerald-800 hover:text-white'
+                }`}
+              >
+                <UserCog size={16} />
+                {openSidebar && <span>Asistencias</span>}
+              </Link>
+            </div>
+          )}  
 
         </nav>
 
