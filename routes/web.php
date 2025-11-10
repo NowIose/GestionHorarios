@@ -23,7 +23,7 @@ use App\Http\Controllers\Docente\AsistenciaController;
 use App\Http\Controllers\Auth\LoginRedirectController;
 //ZONA USEs PARA RUTAS DE LA BITACORA
 use App\Http\Controllers\Admin\BitacoraController;
-//ZONA USES PARA EL MODULO 2 DE DOCENTES
+//ZONA USES PARA EL MODULO 2 ACADEMICO
    use App\Models\Materia;
     use App\Models\Grupo;
     use App\Models\Prerequisito;
@@ -31,6 +31,14 @@ use App\Http\Controllers\Admin\BitacoraController;
 use App\Http\Controllers\Admin\Academico\MateriaController;
 use App\Http\Controllers\Admin\Academico\GrupoController;
 use App\Http\Controllers\Admin\Academico\GrupoMateriaController;
+
+//ZONA USES PARA RUTAS DEL MODULO 3 HORARIOS
+ use App\Http\Controllers\Admin\Horarios\{
+        AulaController,
+        HorarioController,
+        HorarioMateriaController,
+        AsistenciaController as HorariosAsistenciaController
+    };
 
 //PAGINA PRINCIPAL NO TOCAR 
 Route::get('/', function () {
@@ -336,6 +344,64 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/grupo-materia', [GrupoMateriaController::class, 'index'])->name('admin.grupoMateria');
     Route::post('/grupo-materia', [GrupoMateriaController::class, 'store']);
     Route::delete('/grupo-materia/{grupoMateria}', [GrupoMateriaController::class, 'destroy']);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MÓDULO 3 — GESTIÓN DE HORARIOS Y ASISTENCIAS
+    |--------------------------------------------------------------------------
+    |
+    | Aquí se gestionan los horarios, aulas, asignaciones de horario-materia
+    | y las asistencias de docentes. 
+    | Todas las rutas usan controladores bajo el namespace:
+    | App\Http\Controllers\Admin\Horarios
+    |
+    */
+
+   
+
+    Route::prefix('horarios')->name('admin.horarios.')->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | AULAS
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/aulas', [AulaController::class, 'index'])->name('aulas');
+        Route::post('/aulas', [AulaController::class, 'store']);
+        Route::put('/aulas/{aula}', [AulaController::class, 'update']);
+        Route::delete('/aulas/{aula}', [AulaController::class, 'destroy']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | HORARIOS BASE (día / hora)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/', [HorarioController::class, 'index'])->name('index');
+        Route::post('/', [HorarioController::class, 'store']);
+        Route::put('/{horario}', [HorarioController::class, 'update']);
+        Route::delete('/{horario}', [HorarioController::class, 'destroy']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | ASIGNACIÓN DE HORARIO A MATERIA (HORARIO_MATERIA)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/asignaciones', [HorarioMateriaController::class, 'index'])->name('materias');
+        Route::post('/asignaciones', [HorarioMateriaController::class, 'store']);
+        Route::put('/asignaciones/{horarioMateria}', [HorarioMateriaController::class, 'update']);
+        Route::delete('/asignaciones/{horarioMateria}', [HorarioMateriaController::class, 'destroy']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | ASISTENCIAS DOCENTES
+        |--------------------------------------------------------------------------
+        */
+        // 📆 ASISTENCIAS (solo lectura y reportes)
+        // 🔹 ASISTENCIAS (solo lectura y reportes)
+        Route::get('/asistencias', [HorariosAsistenciaController::class, 'index'])->name('asistencias.index');
+        Route::get('/asistencias/reporte', [HorariosAsistenciaController::class, 'reporte'])->name('asistencias.reporte');
+    });
 
 });
 

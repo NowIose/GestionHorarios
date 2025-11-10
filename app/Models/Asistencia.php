@@ -20,7 +20,10 @@ class Asistencia extends Model
     protected $casts = [
         'fecha' => 'date',
     ];
-
+    public function scopeHoy($query)
+    {
+        return $query->whereDate('fecha', now());
+    }
     public function docente()
     {
         return $this->belongsTo(Docente::class);

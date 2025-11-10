@@ -19,6 +19,9 @@ return new class extends Migration {
 
             $table->timestamps();
 
+            //  Mejora rendimiento de búsqueda
+            $table->index(['grupo_materia_id']);
+            
             // 🚫 Evita duplicidad de aula y horario
             $table->unique(['horario_id', 'aula_id'], 'horario_aula_unique');
         });

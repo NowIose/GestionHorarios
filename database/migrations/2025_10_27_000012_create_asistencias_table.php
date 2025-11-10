@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->foreignId('horario_materia_id')->constrained('horario_materia')->cascadeOnDelete();
             $table->date('fecha');
             $table->string('modalidad')->nullable();
-            $table->string('estado')->default('presente');
+            $table->enum('estado', ['presente', 'ausente', 'justificado'])->default('presente');
             $table->timestamps();
         });
     }

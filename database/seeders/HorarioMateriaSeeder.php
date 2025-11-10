@@ -9,7 +9,6 @@ class HorarioMateriaSeeder extends Seeder
 {
     public function run(): void
     {
-        // Verificación de tablas necesarias
         if (
             !DB::getSchemaBuilder()->hasTable('horario_materia') ||
             !DB::getSchemaBuilder()->hasTable('horarios') ||
@@ -29,22 +28,20 @@ class HorarioMateriaSeeder extends Seeder
             return;
         }
 
-        // Listas para evitar duplicados
-        $ocupacionAulas = [];     // Clave: "horario_id-aula_id"
-        $ocupacionDocentes = [];  // Clave: "horario_id-docente_id"
+        DB::table('horario_materia')->truncate();
 
-        $i = 0;
+        $ocupacionAulas = [];     // "horario_id-aula_id"
+        $ocupacionDocentes = [];  // "horario_id-docente_id"
+
         foreach ($gruposMaterias as $gm) {
             $horarioAsignado = null;
             $aulaAsignada = null;
 
-            // Buscamos un horario + aula que esté libre para este docente
             foreach ($horarios as $horario) {
                 foreach ($aulas as $aula) {
                     $claveAula = "{$horario->id}-{$aula->id}";
                     $claveDocente = "{$horario->id}-{$gm->docente_id}";
 
-                    // Verificamos que ni el aula ni el docente estén ocupados
                     if (
                         !in_array($claveAula, $ocupacionAulas) &&
                         !in_array($claveDocente, $ocupacionDocentes)
@@ -52,10 +49,9 @@ class HorarioMateriaSeeder extends Seeder
                         $horarioAsignado = $horario->id;
                         $aulaAsignada = $aula->id;
 
-                        // Marcamos como ocupados
                         $ocupacionAulas[] = $claveAula;
                         $ocupacionDocentes[] = $claveDocente;
-                        break 2; // Salimos de ambos bucles
+                        break 2;
                     }
                 }
             }
@@ -65,18 +61,17 @@ class HorarioMateriaSeeder extends Seeder
                     'horario_id' => $horarioAsignado,
                     'aula_id' => $aulaAsignada,
                     'grupo_materia_id' => $gm->id,
+                    'estado' => 'activo',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
                 $this->command->info(
-                    "✅ GrupoMateria #{$gm->id} asignado → Horario {$horarioAsignado}, Aula {$aulaAsignada}"
+                    "✅ GrupoMateria #{$gm->id} asignado → {$aulaAsignada} ({$horarioAsignado})"
                 );
             } else {
                 $this->command->warn("⚠️ No se pudo asignar horario/aula al grupo_materia ID {$gm->id}");
             }
-
-            $i++;
         }
     }
 }

@@ -15,8 +15,16 @@ class HorarioMateria extends Model
         'horario_id',
         'aula_id',
         'grupo_materia_id',
-        'estado', //  Nuevo campo añadido
+        'estado',
     ];
+
+    protected $attributes = [
+        'estado' => 'activo',
+    ];
+      public function setEstadoAttribute($value)
+    {
+        $this->attributes['estado'] = strtolower($value ?? 'activo');
+    }
 
     // Relaciones
     public function horario()
