@@ -5,10 +5,10 @@ import { CheckCircle, XCircle, Clock } from "lucide-react";
 
 interface HorarioMateria {
   id: number;
-  aula?: { nombre: string };
+  aula?: { nombre?: string; nro?: string }; 
   grupo_materia?: {
     materia?: { nombre: string };
-    grupo?: { nombre: string };
+    grupo?: { codigo: string };
   };
   horario?: {
     dia: string;
@@ -20,8 +20,9 @@ interface HorarioMateria {
 interface Asistencia {
   id: number;
   fecha: string;
+  hora?: string;
   modalidad: string;
-  estado: boolean;
+  estado: string;
   horario_materia?: HorarioMateria;
 }
 
@@ -33,16 +34,19 @@ export default function Asistencias({
   asistencias: Asistencia[];
 }) {
   const { flash } = usePage().props as any;
-  const [selectedHorario, setSelectedHorario] = useState<number | null>(null);
 
   const { post, data, setData, processing, reset } = useForm({
     horario_materia_id: "",
     modalidad: "presencial",
-    estado: true,
+    estado: "presente",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!data.horario_materia_id) {
+      alert("⚠️ Selecciona un horario antes de registrar asistencia.");
+      return;
+    }
     post("/docente/asistencias", {
       onSuccess: () => reset(),
     });
@@ -54,7 +58,7 @@ export default function Asistencias({
 
       <div className="p-6">
         <h1 className="text-2xl font-bold text-orange-600 mb-4">
-          Registro de Asistencia
+          Registro de Asistencia del Docente
         </h1>
 
         {/* 🔔 Mensajes flash */}
@@ -88,9 +92,9 @@ export default function Asistencias({
             <option value="">Seleccione una opción</option>
             {horarios.map((h) => (
               <option key={h.id} value={h.id}>
-                {h.grupo_materia?.grupo?.nombre} —{" "}
+                {h.grupo_materia?.grupo?.codigo} —{" "}
                 {h.grupo_materia?.materia?.nombre} (
-                {h.aula?.nombre || "Sin aula"}) | {h.horario?.dia}{" "}
+                {h.aula?.nro || h.aula?.nombre || "Sin aula"}) | {h.horario?.dia}{" "}
                 {h.horario?.hora_inicio} - {h.horario?.hora_fin}
               </option>
             ))}
@@ -110,20 +114,28 @@ export default function Asistencias({
           </select>
 
           {/* Estado */}
-          <div className="flex items-center gap-2 mb-4">
-            <input
-              type="checkbox"
-              checked={data.estado}
-              onChange={(e) => setData("estado", e.target.checked)}
-            />
-            <span className="text-gray-700">Asistí hoy</span>
-          </div>
+          <label className="block mb-2 font-semibold text-gray-700">
+            Estado:
+          </label>
+          <select
+            className="w-full border rounded-md px-3 py-2 mb-4"
+            value={data.estado}
+            onChange={(e) => setData("estado", e.target.value)}
+          >
+            <option value="presente">Presente</option>
+            <option value="ausente">Ausente</option>
+            <option value="justificado">Justificado</option>
+          </select>
 
           {/* Botón */}
           <button
             type="submit"
             disabled={processing}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md"
+            className={`w-full text-white py-2 rounded-md ${
+              processing
+                ? "bg-orange-400 cursor-not-allowed"
+                : "bg-orange-500 hover:bg-orange-600"
+            }`}
           >
             {processing ? "Guardando..." : "Registrar Asistencia"}
           </button>
@@ -137,10 +149,11 @@ export default function Asistencias({
           </h2>
 
           {asistencias.length > 0 ? (
-            <table className="w-full border-collapse border border-gray-300">
-              <thead className="bg-orange-100">
+            <table className="w-full border-collapse border border-gray-300 text-sm">
+              <thead className="bg-orange-100 text-gray-800">
                 <tr>
                   <th className="border p-2 text-left">Fecha</th>
+                  <th className="border p-2 text-left">Hora</th>
                   <th className="border p-2 text-left">Materia</th>
                   <th className="border p-2 text-left">Grupo</th>
                   <th className="border p-2 text-center">Modalidad</th>
@@ -153,21 +166,30 @@ export default function Asistencias({
                     <td className="border p-2">
                       {new Date(a.fecha).toLocaleDateString()}
                     </td>
+                    <td className="border p-2 text-center">
+                      {a.hora ? a.hora.slice(0, 5) : "—"}
+                    </td>
                     <td className="border p-2">
                       {a.horario_materia?.grupo_materia?.materia?.nombre}
                     </td>
                     <td className="border p-2">
-                      {a.horario_materia?.grupo_materia?.grupo?.nombre}
+                      {a.horario_materia?.grupo_materia?.grupo?.codigo}
                     </td>
-                    <td className="border p-2 text-center">{a.modalidad}</td>
+                    <td className="border p-2 text-center capitalize">
+                      {a.modalidad}
+                    </td>
                     <td className="border p-2 text-center">
-                      {a.estado ? (
+                      {a.estado === "presente" ? (
                         <span className="text-green-600 font-semibold">
                           Presente
                         </span>
-                      ) : (
+                      ) : a.estado === "ausente" ? (
                         <span className="text-red-600 font-semibold">
                           Ausente
+                        </span>
+                      ) : (
+                        <span className="text-blue-600 font-semibold">
+                          Justificado
                         </span>
                       )}
                     </td>

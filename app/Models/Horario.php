@@ -18,8 +18,8 @@ class Horario extends Model
 
     //  Cómo se interpretan internamente (opcional, útil para Date casting)
     protected $casts = [
-        'hora_inicio' => 'datetime:H:i',
-        'hora_fin' => 'datetime:H:i',
+        'hora_inicio' => 'string',
+        'hora_fin' => 'string',
     ];
 
     // Relación: un horario puede tener varios registros de HorarioMateria

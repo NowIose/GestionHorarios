@@ -417,14 +417,24 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::get('/materias', fn() => Inertia::render('Docente/MisMaterias'))->name('docente.materias');
         Route::get('/horarios', fn() => Inertia::render('Docente/MisHorarios'))->name('docente.horarios');
         Route::get('/asistencias', fn() => Inertia::render('Docente/Asistencias'))->name('docente.asistencias');
+        /*
+        |--------------------------------------------------------------------------
+        | Asistencias del Docente
+        |--------------------------------------------------------------------------
+        */
+        
+         Route::get('/asistencias', [AsistenciaController::class, 'index'])->name('docente.asistencias');
+        Route::post('/asistencias', [AsistenciaController::class, 'store'])->name('docente.asistencias.store');
+
         
     });
 
-    Route::middleware(['auth'])->prefix('docente')->group(function () {
+   /* Route::middleware(['auth'])->prefix('docente')->group(function () {
         Route::get('/asistencias', [AsistenciaController::class, 'index'])->name('docente.asistencias');
         Route::post('/asistencias', [AsistenciaController::class, 'store'])->name('docente.asistencias.store');
-    });
-
+    });*/
+    /*
+    
     /*
     |--------------------------------------------------------------------------
     | ZONA DIRECTOR DE CARRERA
@@ -463,3 +473,25 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
 Route::get('/test', fn() => Inertia::render('Docente/Dashboard'));
 require __DIR__.'/settings.php';
+
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Writer;
+
+
+Route::get('/test-qr', function () {
+    $renderer = new ImageRenderer(
+        new RendererStyle(250),
+        new SvgImageBackEnd()
+    );
+
+    $writer = new Writer($renderer);
+
+    // URL que se mostrará en el QR
+    $url = url('/'); // muestra la URL base del proyecto
+    $qrSvg = $writer->writeString($url);
+
+    // Mostramos el SVG directamente en el navegador
+    return response($qrSvg)->header('Content-Type', 'image/svg+xml');
+});
