@@ -125,12 +125,47 @@ export default function HorarioMateria({
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("¿Seguro que deseas eliminar esta asignación?")) {
-      destroy(`/admin/horarios/asignaciones/${id}`, {
-        onSuccess: () => toast.success("🗑️ Asignación eliminada correctamente"),
-      });
+  toast(
+    (t) => (
+      <div className="flex flex-col gap-2">
+        <p className="font-semibold text-gray-800">
+          ¿Seguro que deseas eliminar esta asignación?
+        </p>
+        <div className="flex justify-center gap-3">
+          <button
+            onClick={() => {
+              destroy(`/admin/horarios/asignaciones/${id}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                  toast.dismiss(t.id);
+                  toast.success("🗑️ Asignación eliminada correctamente");
+                },
+                onError: () => {
+                  toast.dismiss(t.id);
+                  toast.error("⚠️ No se pudo eliminar la asignación");
+                },
+              });
+            }}
+            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm"
+          >
+            Sí, eliminar
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded-md text-sm"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    ),
+    {
+      duration: 5000,
+      style: { background: "#fff", padding: "16px" },
     }
-  };
+  );
+};
+
 
   return (
     <AdminLayout>

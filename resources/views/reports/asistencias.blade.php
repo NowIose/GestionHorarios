@@ -8,10 +8,9 @@
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 12px;
             margin: 20px;
+            color: #000;
         }
-        h1, h2, h3 {
-            color: #064e3b;
-        }
+        h1, h3 { color: #064e3b; }
         .header {
             text-align: center;
             border-bottom: 2px solid #10b981;
@@ -55,6 +54,7 @@
                 <th>Grupo</th>
                 <th>Aula</th>
                 <th>Horario</th>
+                <th>Hora marcada</th>
                 <th>Estado</th>
             </tr>
         </thead>
@@ -65,17 +65,21 @@
                     <td>{{ $a->horarioMateria->grupoMateria->materia->sigla ?? '' }} - {{ $a->horarioMateria->grupoMateria->materia->nombre ?? '' }}</td>
                     <td>{{ $a->horarioMateria->grupoMateria->grupo->codigo ?? '' }}</td>
                     <td>{{ $a->horarioMateria->aula->nro ?? '' }}</td>
+                    <td>{{ $a->horarioMateria->horario->dia ?? '' }} ({{ $a->horarioMateria->horario->hora_inicio ?? '' }} - {{ $a->horarioMateria->horario->hora_fin ?? '' }})</td>
                     <td>
-                        {{ $a->horarioMateria->horario->dia ?? '' }}
-                        ({{ $a->horarioMateria->horario->hora_inicio ?? '' }} - {{ $a->horarioMateria->horario->hora_fin ?? '' }})
+                        @if($a->estado === 'presente')
+                            {{ $a->hora ?? '—' }}
+                        @else
+                            —
+                        @endif
                     </td>
-                    <td class="{{ $a->estado == 'presente' ? 'present' : 'absent' }}">
+                    <td class="{{ $a->estado === 'presente' ? 'present' : 'absent' }}">
                         {{ ucfirst($a->estado) }}
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align:center;">No hay asistencias registradas</td>
+                    <td colspan="7" style="text-align:center;">No hay asistencias registradas</td>
                 </tr>
             @endforelse
         </tbody>

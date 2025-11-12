@@ -71,14 +71,41 @@ class HorarioMateriaController extends Controller
     public function update(Request $request, HorarioMateria $horarioMateria)
     {
         $data = $request->validate([
+            'horario_id' => 'required|exists:horarios,id',
+            'aula_id' => 'required|exists:aulas,id',
+            'grupo_materia_id' => 'required|exists:grupo_materia,id',
             'estado' => 'required|in:activo,inactivo',
         ]);
+
+        // 🚫 Validar conflicto de aula (evitar duplicados)
+        $aulaOcupada = HorarioMateria::where('horario_id', $data['horario_id'])
+            ->where('aula_id', $data['aula_id'])
+            ->where('id', '!=', $horarioMateria->id)
+            ->exists();
+
+        if ($aulaOcupada) {
+            return back()->with('error', '❌ El aula ya está ocupada en ese horario.');
+        }
+
+        // 🚫 Validar conflicto de grupo
+        $grupoMateria = GrupoMateria::find($data['grupo_materia_id']);
+        if ($grupoMateria) {
+            $grupoOcupado = HorarioMateria::where('horario_id', $data['horario_id'])
+                ->whereIn('grupo_materia_id', GrupoMateria::where('grupo_id', $grupoMateria->grupo_id)->pluck('id'))
+                ->where('id', '!=', $horarioMateria->id)
+                ->exists();
+
+            if ($grupoOcupado) {
+                return back()->with('error', '⚠️ Ese grupo ya tiene otra materia en ese horario.');
+            }
+        }
 
         $horarioMateria->update($data);
 
         return redirect()->route('admin.horarios.materias')
-            ->with('success', '🔄 Estado actualizado correctamente.');
+            ->with('success', '✏️ Asignación actualizada correctamente.');
     }
+
 
     public function destroy(HorarioMateria $horarioMateria)
     {

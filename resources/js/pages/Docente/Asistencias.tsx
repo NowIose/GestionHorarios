@@ -1,4 +1,5 @@
-﻿import React, { useState } from "react";
+﻿
+import React, { useState } from "react";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
