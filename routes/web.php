@@ -16,7 +16,8 @@ use App\Models\Docente;
 use App\Models\Permission;
 //ZONA USEs PARA RUTAS DE LOS ROLES
 
-//ZONA USEs PARA RUTAS DE LA ASISTENCIA DE DOCENTES
+//ZONA USEs PARA RUTAS DE LA ASISTENCIA DE DOCENTES Y PANEL DOCENTE
+use App\Http\Controllers\Docente\DocenteController;
 use App\Http\Controllers\Docente\AsistenciaController;
 
 //NUEVO CONTROLLER PARA REDIRECCION DE USUARIOSS
@@ -413,9 +414,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::middleware(['auth'])->prefix('docente')->group(function () {
-        Route::get('/dashboard', fn() => Inertia::render('Docente/Dashboard'))->name('docente.dashboard');
-        Route::get('/materias', fn() => Inertia::render('Docente/MisMaterias'))->name('docente.materias');
-        Route::get('/horarios', fn() => Inertia::render('Docente/MisHorarios'))->name('docente.horarios');
+        Route::get('/dashboard', [DocenteController::class, 'dashboard'])->name('docente.dashboard');
+        Route::get('/materias', [DocenteController::class, 'materias'])->name('docente.materias');
+        Route::get('/horarios', [DocenteController::class, 'horarios'])->name('docente.horarios');
         Route::get('/asistencias', fn() => Inertia::render('Docente/Asistencias'))->name('docente.asistencias');
         /*
         |--------------------------------------------------------------------------

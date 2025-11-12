@@ -16,7 +16,7 @@ import { edit } from '@/routes/profile';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile settings',
+        title: 'Configuración de perfil',
         href: edit().url,
     },
 ];
@@ -37,8 +37,8 @@ export default function Profile({
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Profile information"
-                        description="Update your name and email address"
+                        title="Informacion de Perfil"
+                        description="Actualizar tu nombre y correo"
                     />
 
                     <Form
@@ -51,7 +51,7 @@ export default function Profile({
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">Nombre</Label>
 
                                     <Input
                                         id="name"
@@ -70,7 +70,7 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email address</Label>
+                                    <Label htmlFor="email">Dirección de correo electrónico</Label>
 
                                     <Input
                                         id="email"
@@ -80,7 +80,7 @@ export default function Profile({
                                         name="email"
                                         required
                                         autoComplete="username"
-                                        placeholder="Email address"
+                                        placeholder="Correo"
                                     />
 
                                     <InputError
@@ -121,7 +121,7 @@ export default function Profile({
                                         disabled={processing}
                                         data-test="update-profile-button"
                                     >
-                                        Save
+                                       Guardar
                                     </Button>
 
                                     <Transition
@@ -132,7 +132,7 @@ export default function Profile({
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Saved
+                                            Guardado
                                         </p>
                                     </Transition>
                                 </div>

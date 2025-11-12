@@ -36,7 +36,7 @@ export default function Register() {
                                     tabIndex={1}
                                     autoComplete="name"
                                     name="name"
-                                    placeholder="Full name"
+                                    placeholder="Nombre Completo"
                                 />
                                 <InputError
                                     message={errors.name}
@@ -67,7 +67,7 @@ export default function Register() {
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder="Contraseña"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -83,7 +83,7 @@ export default function Register() {
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-                                    placeholder="Confirm password"
+                                    placeholder="Confirma contraseña"
                                 />
                                 <InputError
                                     message={errors.password_confirmation}

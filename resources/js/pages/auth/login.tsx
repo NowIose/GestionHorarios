@@ -55,7 +55,7 @@ export default function Login({
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Contraseña</Label>
-                                    {canResetPassword && (
+                                   {/* {canResetPassword && (
                                         <TextLink
                                             href={request()}
                                             className="ml-auto text-sm"
@@ -63,7 +63,8 @@ export default function Login({
                                         >
                                             Has olvidado tu contraseña? no disponible :c
                                         </TextLink>
-                                    )}
+                                    )
+                                        */}
                                 </div>
                                 <Input
                                     id="password"
@@ -72,18 +73,18 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="Contraseña"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             <div className="flex items-center space-x-3">
-                                <Checkbox
+                               {/* <Checkbox
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
-                                />
-                                <Label htmlFor="remember">Recuerdame no disponible :c</Label>
+                                />*/}
+                                <Label htmlFor="remember">Revisa Mayusculas ingrese bien tus datos </Label>
                             </div>
 
                             <Button
