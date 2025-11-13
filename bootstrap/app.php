@@ -26,7 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+        $middleware->alias([
+        'permiso' => \App\Http\Middleware\CheckPermission::class,
+    ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+    
