@@ -41,6 +41,10 @@ use App\Http\Controllers\Admin\Academico\GrupoMateriaController;
         AsistenciaController as HorariosAsistenciaController
     };
 
+/*USEs para exportar por execel docente y usuarios*/
+use App\Http\Controllers\Admin\Docente\DocenteImportController;
+
+
 //PAGINA PRINCIPAL NO TOCAR 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -404,6 +408,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::get('/asistencias/reporte', [HorariosAsistenciaController::class, 'reporte'])->name('asistencias.reporte');
     });
 
+
+    /*RUTAS PAR ALA IMPORTACION DE USUARIOS DOCENTES EN DE UN EXCEL*/
+    Route::get('/docentes/import', [DocenteImportController::class, 'index'])
+        ->name('admin.docentes.import.view');
+
+    Route::post('/docentes/import', [DocenteImportController::class, 'store'])
+        ->name('admin.docentes.import');
+   
 });
 
 

@@ -176,6 +176,18 @@ export default function AdminLayout({ children }: Props) {
                 <FileText size={16} />
                 {openSidebar && <span>Bitácora</span>}
               </Link>
+                  {/* NUEVO BOTÓN PARA IMPORTAR EXCEL  */}
+              <Link
+                href="/admin/docentes/import"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                  url.startsWith('/admin/docentes/import')
+                    ? 'bg-blue-800 text-white'
+                    : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+                }`}
+              >
+                <FileText size={16} />
+                {openSidebar && <span>Importar Excel Docentes</span>}
+              </Link>
             </div>
           )}
           {/* === GESTIÓN ACADÉMICA === */}
