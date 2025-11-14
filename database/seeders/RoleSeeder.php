@@ -17,5 +17,7 @@ class RoleSeeder extends Seeder
         // --- DOCENTE ---
         // NO usa permisos del panel admin
         Role::firstOrCreate(['nombre' => 'Docente']);
+
+        Role::firstOrCreate(['nombre'=> 'Usuario']);
     }
 }

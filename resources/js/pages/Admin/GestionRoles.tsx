@@ -17,7 +17,7 @@ interface Role {
   permissions: Permission[];
 }
 
-// 🧩 Subcomponente para manejar cada grupo de permisos plegable
+//  Subcomponente para manejar cada grupo de permisos plegable
 const PermissionGroup = ({
   modulo,
   perms,

@@ -14,9 +14,9 @@ import {
   Clock,
   Building2,
 } from 'lucide-react';
-import { Toaster } from 'react-hot-toast'; //nuevo 
+import { Toaster,toast } from 'react-hot-toast'; //nuevo 
 
-// ✅ Tipado para evitar errores de props
+//  Tipado para evitar errores de props
 interface AuthProps {
   auth?: {
     user?: {
@@ -61,6 +61,12 @@ export default function AdminLayout({ children }: Props) {
   );
   const user = props.auth?.user;
 
+
+React.useEffect(() => {
+  if (props.toast) {
+    toast.error(String(props.toast));
+  }
+}, [props.toast]);
   return (
     <div className="flex min-h-screen bg-gray-100 font-sans">
       <aside

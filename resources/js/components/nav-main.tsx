@@ -43,7 +43,7 @@ const baseItems: NavItem[] = [
 /* ✅ Botones por rol con rutas actualizadas y botón de panel */
 const menuOptions: Record<string, NavItem[]> = {
     administrador: [
-        { title: 'Panel Admin', href: '/admin/dashboard', icon: Shield },
+       // { title: 'Panel Admin', href: '/admin/dashboard', icon: Shield },
     ],
     docente: [
         { title: 'Panel Docente', href: '/docente/dashboard', icon: Home },
@@ -81,10 +81,20 @@ export function NavMain({ items = [] }: { items?: NavItem[] }) {
     // ✅ Construcción dinámica del menú según el rol
     let dynamicItems: NavItem[] = [...baseItems];
 
-    if (menuOptions[role]) {
-        // Si el rol tiene opciones adicionales, las agregamos
-        dynamicItems.push(...menuOptions[role]);
+    // Si NO es docente → agregar acceso al panel admin
+    if (role !== 'docente' ) {
+        dynamicItems.push({
+            title: 'Panel Admin',
+            href: '/admin/dashboard',
+            icon: Shield,
+        });
     }
+
+// Si es docente → agregar solo los botones del docente
+if (menuOptions[role]) {
+    dynamicItems.push(...menuOptions[role]);
+}
+
 
     // ✅ No combinamos con los items externos (para evitar duplicados)
     const allItems = dynamicItems;

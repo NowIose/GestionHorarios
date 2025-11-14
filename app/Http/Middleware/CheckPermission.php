@@ -20,13 +20,13 @@ class CheckPermission
         // Si es DOCENTE, nunca acceder al admin
         if ($user->role->nombre === 'Docente') {
             return redirect()->route('docente.dashboard')
-                ->with('error', '❌ No tienes permiso para acceder al panel administrativo.');
+                ->with('toast', '❌ No tienes permiso para acceder al panel administrativo.');
         }
 
         // Si el rol tiene permisos específicos
         if (!$user->role->permissions->contains('nombre', $permiso)) {
             return redirect()->route('admin.dashboard')
-                ->with('error', '❌ No tienes permiso para acceder a este módulo.');
+                ->with('toast', '❌ No tienes permiso para acceder a este módulo.');
         }
 
         return $next($request);

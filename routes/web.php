@@ -96,7 +96,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             'users' => $users,
             'roles' => $roles,
         ]);
-    })->name('admin.usuarios');
+    })->middleware('permiso:usuarios')->name('admin.usuarios');
     //ZONA NORMAL USUARIOS AUTENTICADOS NO TOCAR
    
 
@@ -123,7 +123,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         return redirect()
             ->route('admin.usuarios')
             ->with('success', 'Usuario creado correctamente.');
-    });
+    })->middleware('permiso:usuarios');
     //  Actualizar usuario existente
     Route::put('/usuarios/{id}', function (Request $request, $id) {
         $validated = $request->validate([
@@ -138,7 +138,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         return redirect()
             ->route('admin.usuarios')
             ->with('success', 'Usuario actualizado correctamente.');
-    });
+    })->middleware('permiso:usuarios');
     //  Borrar usuario existente
     Route::delete('/usuarios/{id}', function ($id) {
     $user = \App\Models\User::findOrFail($id);
@@ -147,7 +147,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     return redirect()
         ->route('admin.usuarios')
         ->with('success', 'Usuario eliminado correctamente.');
-    });
+    })->middleware('permiso:usuarios');
 
 
     // hasta aqui usuarios
@@ -163,7 +163,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         return inertia('Admin/GestionDocentes', [
             'docentes' => $docentes,
         ]);
-    })->name('admin.docentes');
+    })->middleware('permiso:docentes')->name('admin.docentes');
 
 
     //  PUT para actualizar datos del docente
@@ -180,7 +180,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
         return redirect()->route('admin.docentes')
             ->with('success', 'Datos del docente actualizados correctamente.');
-    });
+    })->middleware('permiso:docentes');
 
     
     
@@ -193,7 +193,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         return inertia('Admin/GestionPermisos', [
             'permisos' => $permisos,
         ]);
-    })->name('admin.permisos');
+    })->middleware('permiso:permisos')->name('admin.permisos');
 
     // Crear permiso
     Route::post('/permisos', function (\Illuminate\Http\Request $request) {
@@ -205,7 +205,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Permission::create($validated);
 
         return redirect()->route('admin.permisos')->with('success', 'Permiso creado correctamente.');
-    });
+    })->middleware('permiso:permisos');
 
     // Actualizar permiso
     Route::put('/permisos/{id}', function (\Illuminate\Http\Request $request, $id) {
@@ -218,14 +218,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         $permiso->update($validated);
 
         return redirect()->route('admin.permisos')->with('success', 'Permiso actualizado correctamente.');
-    });
+    })->middleware('permiso:permisos');
 
     // Eliminar permiso
     Route::delete('/permisos/{id}', function ($id) {
         Permission::findOrFail($id)->delete();
 
         return redirect()->route('admin.permisos')->with('success', 'Permiso eliminado correctamente.');
-    });
+    })->middleware('permiso:permisos');
 
 
 
@@ -248,7 +248,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             'roles' => $roles,
             'permissions' => $permissions,
         ]);
-    })->name('admin.roles');
+    })->middleware('permiso:roles')->name('admin.roles');
 
 
     //  Crear rol
@@ -272,7 +272,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
         return redirect()->route('admin.roles')
             ->with('success', 'Rol creado correctamente.');
-    });
+    })->middleware('permiso:roles');
 
 
     // Editar rol
@@ -294,7 +294,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
         return redirect()->route('admin.roles')
             ->with('success', 'Rol actualizado correctamente.');
-    });
+    })->middleware('permiso:roles');
 
 
     //  Eliminar rol
@@ -307,13 +307,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
         return redirect()->route('admin.roles')
             ->with('success', 'Rol eliminado correctamente.');
-    });
+    })->middleware('permiso:roles');
 
 
 
     //otra rutas para despues
    // Route::get('/bitacora', fn() => inertia('Admin/GestionBitacora'))->name('admin.bitacora');
-    Route::get('/bitacora', [BitacoraController::class, 'index'])->name('admin.bitacora');
+    Route::get('/bitacora', [BitacoraController::class, 'index'])->middleware('permiso:bitacora')->name('admin.bitacora');
 
      /*
     |--------------------------------------------------------------------------
@@ -333,22 +333,22 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         return inertia('Admin/Academico/Materias', [
             'materias' => $materias,
         ]);
-    })->name('admin.materias');
+    })->middleware('permiso:materias')->name('admin.materias');
 
-    Route::post('/materias', [MateriaController::class, 'store']);
-    Route::put('/materias/{materia}', [MateriaController::class, 'update']);
-    Route::delete('/materias/{materia}', [MateriaController::class, 'destroy']);
+    Route::post('/materias', [MateriaController::class, 'store'])->middleware('permiso:materias');
+    Route::put('/materias/{materia}', [MateriaController::class, 'update'])->middleware('permiso:materias');
+    Route::delete('/materias/{materia}', [MateriaController::class, 'destroy'])->middleware('permiso:materias');
 
     // 🔹 Grupos
-    Route::get('/grupos', [GrupoController::class, 'index'])->name('admin.grupos');
-    Route::post('/grupos', [GrupoController::class, 'store']);
-    Route::put('/grupos/{grupo}', [GrupoController::class, 'update']);
-    Route::delete('/grupos/{grupo}', [GrupoController::class, 'destroy']);
+    Route::get('/grupos', [GrupoController::class, 'index'])->middleware('permiso:grupos')->name('admin.grupos');
+    Route::post('/grupos', [GrupoController::class, 'store'])->middleware('permiso:grupos');
+    Route::put('/grupos/{grupo}', [GrupoController::class, 'update'])->middleware('permiso:grupos');
+    Route::delete('/grupos/{grupo}', [GrupoController::class, 'destroy'])->middleware('permiso:grupos');
 
     // 🔹 Grupo-Materia (asignar docentes y materias a grupos)
-    Route::get('/grupo-materia', [GrupoMateriaController::class, 'index'])->name('admin.grupoMateria');
-    Route::post('/grupo-materia', [GrupoMateriaController::class, 'store']);
-    Route::delete('/grupo-materia/{grupoMateria}', [GrupoMateriaController::class, 'destroy']);
+    Route::get('/grupo-materia', [GrupoMateriaController::class, 'index'])->middleware('permiso:grupo_materia')->name('admin.grupoMateria');
+    Route::post('/grupo-materia', [GrupoMateriaController::class, 'store'])->middleware('permiso:grupo_materia');
+    Route::delete('/grupo-materia/{grupoMateria}', [GrupoMateriaController::class, 'destroy'])->middleware('permiso:grupo_materia');
 
 
     /*
@@ -372,30 +372,30 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         | AULAS
         |--------------------------------------------------------------------------
         */
-        Route::get('/aulas', [AulaController::class, 'index'])->name('aulas');
-        Route::post('/aulas', [AulaController::class, 'store']);
-        Route::put('/aulas/{aula}', [AulaController::class, 'update']);
-        Route::delete('/aulas/{aula}', [AulaController::class, 'destroy']);
+        Route::get('/aulas', [AulaController::class, 'index'])->name('aulas')->middleware('permiso:aulas');
+        Route::post('/aulas', [AulaController::class, 'store'])->middleware('permiso:aulas');
+        Route::put('/aulas/{aula}', [AulaController::class, 'update'])->middleware('permiso:aulas');
+        Route::delete('/aulas/{aula}', [AulaController::class, 'destroy'])->middleware('permiso:aulas');
 
         /*
         |--------------------------------------------------------------------------
         | HORARIOS BASE (día / hora)
         |--------------------------------------------------------------------------
         */
-        Route::get('/', [HorarioController::class, 'index'])->name('index');
-        Route::post('/', [HorarioController::class, 'store']);
-        Route::put('/{horario}', [HorarioController::class, 'update']);
-        Route::delete('/{horario}', [HorarioController::class, 'destroy']);
+        Route::get('/', [HorarioController::class, 'index'])->name('index')->middleware('permiso:horarios');
+        Route::post('/', [HorarioController::class, 'store'])->middleware('permiso:horarios');
+        Route::put('/{horario}', [HorarioController::class, 'update'])->middleware('permiso:horarios');
+        Route::delete('/{horario}', [HorarioController::class, 'destroy'])->middleware('permiso:horarios');
 
         /*
         |--------------------------------------------------------------------------
         | ASIGNACIÓN DE HORARIO A MATERIA (HORARIO_MATERIA)
         |--------------------------------------------------------------------------
         */
-        Route::get('/asignaciones', [HorarioMateriaController::class, 'index'])->name('materias');
-        Route::post('/asignaciones', [HorarioMateriaController::class, 'store']);
-        Route::put('/asignaciones/{horarioMateria}', [HorarioMateriaController::class, 'update']);
-        Route::delete('/asignaciones/{horarioMateria}', [HorarioMateriaController::class, 'destroy']);
+        Route::get('/asignaciones', [HorarioMateriaController::class, 'index'])->middleware('permiso:asignaciones')->name('materias');
+        Route::post('/asignaciones', [HorarioMateriaController::class, 'store'])->middleware('permiso:asignaciones');
+        Route::put('/asignaciones/{horarioMateria}', [HorarioMateriaController::class, 'update'])->middleware('permiso:asignaciones');
+        Route::delete('/asignaciones/{horarioMateria}', [HorarioMateriaController::class, 'destroy'])->middleware('permiso:asignaciones');
 
         /*
         |--------------------------------------------------------------------------
@@ -404,16 +404,17 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         */
         // 📆 ASISTENCIAS (solo lectura y reportes)
         // 🔹 ASISTENCIAS (solo lectura y reportes)
-        Route::get('/asistencias', [HorariosAsistenciaController::class, 'index'])->name('asistencias.index');
-        Route::get('/asistencias/reporte', [HorariosAsistenciaController::class, 'reporte'])->name('asistencias.reporte');
+        Route::get('/asistencias', [HorariosAsistenciaController::class, 'index'])->middleware('permiso:asistencias_admin')->name('asistencias.index');
+        Route::get('/asistencias/reporte', [HorariosAsistenciaController::class, 'reporte'])->middleware('permiso:asistencias_admin')->name('asistencias.reporte');
     });
 
 
     /*RUTAS PAR ALA IMPORTACION DE USUARIOS DOCENTES EN DE UN EXCEL*/
     Route::get('/docentes/import', [DocenteImportController::class, 'index'])
-        ->name('admin.docentes.import.view');
+        ->middleware('permiso:importar_docentes')->name('admin.docentes.import.view');
 
     Route::post('/docentes/import', [DocenteImportController::class, 'store'])
+        ->middleware('permiso:importar_docentes')
         ->name('admin.docentes.import');
    
 });

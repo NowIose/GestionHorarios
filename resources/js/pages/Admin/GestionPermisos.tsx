@@ -75,13 +75,13 @@ export default function GestionPermisos() {
           <h1 className="text-3xl font-bold text-gray-800">Gestión de Permisos</h1>
           <p className="text-gray-500 mt-1">Administra los permisos del sistema</p>
         </div>
-        <button
+        {/*<button
           onClick={openCreateModal}
           className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-md transition"
         >
           <Plus size={18} />
           Nuevo Permiso
-        </button>
+        </button>*/}
       </div>
 
       {/* Tabla */}
